@@ -48,13 +48,13 @@ static dwt_config_t config = {
 
 #define TX_BUF_LEN 20
 
-static uint8_t rx_no_relay[] =
+static const uint8_t rx_no_relay[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '0', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static uint8_t rx_first_relay[] =
+static const uint8_t rx_first_relay[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '1', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static uint8_t rx_second_relay[] =
+static const uint8_t rx_second_relay[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '2', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static uint8_t rx_all_relays[] =
+static const uint8_t rx_all_relays[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '3', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 /* Frames used in the ranging process. See NOTE 3 below. */
@@ -90,7 +90,7 @@ static uint64_t resp_tx_ts;
  * temperature. These values can be calibrated prior to taking reference measurements. See NOTE 5 below. */
 extern dwt_txconfig_t txconfig_options;
 
-void memcpy_byte(volatile uint8_t* dest, uint8_t* src, size_t length);
+void memcpy_byte(volatile uint8_t* dest, const uint8_t* src, size_t length);
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn main()
@@ -238,7 +238,7 @@ void set_tx_param(uint8_t parameter)
   }
 }
 
-void memcpy_byte(volatile uint8_t* dest, uint8_t* src, size_t length)
+void memcpy_byte(volatile uint8_t* dest, const uint8_t* src, size_t length)
 {
   for (int i = 0; i < length; i++)
   {

@@ -196,23 +196,6 @@ int uwb_slave(void)
         /* Check that the frame is the expected response from the companion "SS TWR responder" example.
           * As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
         rx_buffer[ALL_MSG_SN_IDX] = 0;
-//        if (memcmp(rx_buffer, rx_no_relay, ALL_MSG_COMMON_LEN) == 0)
-//        {
-//          // Prints the distance value (in meters) on the terminal
-//          printf("\rDistance: %f, No relay\n", calculateDistance());
-//        }
-//        else if (memcmp(rx_buffer, rx_first_relay, ALL_MSG_COMMON_LEN) == 0)
-//        {
-//          printf("\rDistance: %f, 1st relay\n", calculateDistance());
-//        }
-//        else if (memcmp(rx_buffer, rx_second_relay, ALL_MSG_COMMON_LEN) == 0)
-//        {
-//          printf("\rDistance: %f, 2nd relay\n", calculateDistance());
-//        }
-//        else if (memcmp(rx_buffer, rx_all_relays, ALL_MSG_COMMON_LEN) == 0)
-//        {
-//          printf("\rDistance: %f, All relays\n", calculateDistance());
-//        }
 
         if (memcmp(rx_buffer, rx_prefix, RX_PREFIX_LEN) == 0 &&
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
