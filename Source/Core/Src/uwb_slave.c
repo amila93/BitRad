@@ -60,20 +60,11 @@ static dwt_config_t config = {
 #define TX_ANT_DLY 16385
 #define RX_ANT_DLY 16385
 
-static uint8_t rx_no_relay[] =
-  {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '0', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static uint8_t rx_first_relay[] =
-  {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '1', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static uint8_t rx_second_relay[] =
-  {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '2', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static uint8_t rx_all_relays[] =
-  {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '3', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
 #define RX_PARAM_IDX 8
 #define RX_PREFIX_LEN 8
 #define RX_SUFFIX_LEN 11
-static uint8_t rx_prefix[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D'};
-static uint8_t rx_suffix = 0xE1;
+static const uint8_t rx_prefix[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D'};
+static const uint8_t rx_suffix = 0xE1;
 
 /* Frames used in the ranging process. See NOTE 3 below. */
 static uint8_t tx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'B', 'I', 'T', 'R', 0xE0, 0, 0};
