@@ -450,7 +450,7 @@ void final_msg_set_ts(uint8_t *ts_field, uint64_t ts)
  *
  * @return none
  */
-void resp_msg_set_ts(uint8_t *ts_field, const uint64_t ts)
+void resp_msg_set_ts(volatile uint8_t *ts_field, const uint64_t ts)
 {
     uint8_t i;
     for (i = 0; i < RESP_MSG_TS_LEN; i++)

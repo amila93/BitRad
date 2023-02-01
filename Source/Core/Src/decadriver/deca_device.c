@@ -198,7 +198,7 @@ void dwt_xfer3000
     const uint32_t    regFileID,  //0x0, 0x04-0x7F ; 0x10000, 0x10004, 0x10008-0x1007F; 0x20000 etc
     const uint16_t    indx,       //sub-index, calculated from regFileID 0..0x7F,
     const uint16_t    length,
-    uint8_t           *buffer,
+    volatile uint8_t  *buffer,
     const spi_modes_e mode
 )
 {
@@ -327,7 +327,7 @@ void dwt_writetodevice
     uint32_t      regFileID,
     uint16_t      index,
     uint16_t      length,
-    uint8_t       *buffer
+    volatile uint8_t *buffer
 )
 {
     dwt_xfer3000(regFileID, index, length, buffer, DW3000_SPI_WR_BIT);
@@ -628,7 +628,7 @@ void _dwt_crc8init(void)
 *
 * returns 8-bit calculate CRC value
 */
-uint8_t dwt_generatecrc8(const uint8_t* byteArray, int len, uint8_t crcRemainderInit)
+uint8_t dwt_generatecrc8(volatile const uint8_t* byteArray, int len, uint8_t crcRemainderInit)
 {
     uint8_t data;
     int byte;
@@ -1708,7 +1708,7 @@ void dwt_settxantennadelay(uint16_t txDelay)
  *
  * returns DWT_SUCCESS for success, or DWT_ERROR for error
  */
-int dwt_writetxdata(uint16_t txDataLength, uint8_t *txDataBytes, uint16_t txBufferOffset)
+int dwt_writetxdata(uint16_t txDataLength, volatile uint8_t *txDataBytes, uint16_t txBufferOffset)
 {
 #ifdef DWT_API_ERROR_CHECK
     assert((pdw3000local->longFrames && (txDataLength <= EXT_FRAME_LEN)) ||\

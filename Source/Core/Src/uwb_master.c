@@ -224,16 +224,16 @@ void set_tx_param(uint8_t parameter)
   switch (parameter)
   {
     case 0:
-      memcpy_char(tx_resp_msg, rx_no_relay, ALL_MSG_COMMON_LEN);
+      memcpy_byte(tx_resp_msg, rx_no_relay, ALL_MSG_COMMON_LEN);
       break;
     case 1:
-      memcpy_char(tx_resp_msg, rx_first_relay, ALL_MSG_COMMON_LEN);
+      memcpy_byte(tx_resp_msg, rx_first_relay, ALL_MSG_COMMON_LEN);
       break;
     case 2:
-      memcpy_char(tx_resp_msg, rx_second_relay, ALL_MSG_COMMON_LEN);
+      memcpy_byte(tx_resp_msg, rx_second_relay, ALL_MSG_COMMON_LEN);
       break;
     case 3:
-      memcpy_char(tx_resp_msg, rx_all_relays, ALL_MSG_COMMON_LEN);
+      memcpy_byte(tx_resp_msg, rx_all_relays, ALL_MSG_COMMON_LEN);
       break;
   }
 }

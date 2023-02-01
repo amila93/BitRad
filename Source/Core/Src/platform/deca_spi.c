@@ -61,8 +61,8 @@ int writetospiwithcrc(
                 uint16_t      headerLength,
                 const uint8_t *headerBuffer,
                 uint16_t      bodyLength,
-                const uint8_t *bodyBuffer,
-                uint8_t       crc8)
+                volatile const uint8_t *bodyBuffer,
+                uint8_t crc8)
 {
     decaIrqStatus_t  stat ;
     stat = decamutexon() ;
@@ -90,7 +90,7 @@ int writetospiwithcrc(
 int writetospi(uint16_t       headerLength,
                const uint8_t  *headerBuffer,
                uint16_t       bodyLength,
-               const uint8_t  *bodyBuffer)
+               volatile const uint8_t *bodyBuffer)
 {
     decaIrqStatus_t  stat ;
     stat = decamutexon() ;
@@ -148,7 +148,7 @@ uint16_t spi_cs_low_delay(uint16_t delay_ms)
 int readfromspi(uint16_t  headerLength,
                 uint8_t   *headerBuffer,
                 uint16_t  readlength,
-                uint8_t   *readBuffer)
+                volatile uint8_t *readBuffer)
 {
     int i;
 

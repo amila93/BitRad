@@ -1011,7 +1011,7 @@ void dwt_settxantennadelay(uint16_t antennaDly);
  *
  * returns DWT_SUCCESS for success, or DWT_ERROR for error
  */
-int dwt_writetxdata(uint16_t txDataLength, uint8_t *txDataBytes, uint16_t txBufferOffset);
+int dwt_writetxdata(uint16_t txDataLength, volatile uint8_t *txDataBytes, uint16_t txBufferOffset);
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @brief This API function configures the TX frame control register before the transmission of a frame
@@ -1646,7 +1646,7 @@ void dwt_configureframefilter(uint16_t enabletype, uint16_t filtermode);
  *
  * returns 8-bit calculate CRC value
  */
-uint8_t dwt_generatecrc8(const uint8_t* byteArray, int flen, uint8_t crcInit);
+uint8_t dwt_generatecrc8(volatile const uint8_t* byteArray, int flen, uint8_t crcInit);
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @brief This is used to enable SPI CRC check in DW3000
@@ -2088,7 +2088,7 @@ void dwt_writetodevice
     uint32_t      recordNumber,   // input parameter - ID of register file or buffer being accessed
     uint16_t      index,          // input parameter - byte index into register file or buffer being accessed
     uint16_t      length,         // input parameter - number of bytes being written
-    uint8_t       *buffer         // input parameter - pointer to buffer containing the 'length' bytes to be written
+    volatile uint8_t *buffer         // input parameter - pointer to buffer containing the 'length' bytes to be written
 );
 
 /*! ------------------------------------------------------------------------------------------------------------------
@@ -2348,7 +2348,7 @@ void dwt_wakeup_ic(void);
  *
  * returns DWT_SUCCESS for success, or DWT_ERROR for error
  */
-extern int writetospiwithcrc(uint16_t headerLength, const uint8_t *headerBuffer, uint16_t bodylength, const uint8_t *bodyBuffer, uint8_t crc8);
+extern int writetospiwithcrc(uint16_t headerLength, const uint8_t *headerBuffer, uint16_t bodylength, volatile const uint8_t *bodyBuffer, uint8_t crc8);
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @brief
@@ -2370,7 +2370,7 @@ extern int writetospiwithcrc(uint16_t headerLength, const uint8_t *headerBuffer,
  *
  * returns DWT_SUCCESS for success, or DWT_ERROR for error
  */
-extern int writetospi(uint16_t headerLength, const uint8_t *headerBuffer, uint16_t bodylength, const uint8_t *bodyBuffer);
+extern int writetospi(uint16_t headerLength, const uint8_t *headerBuffer, uint16_t bodylength, volatile const uint8_t *bodyBuffer);
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @brief
@@ -2392,7 +2392,7 @@ extern int writetospi(uint16_t headerLength, const uint8_t *headerBuffer, uint16
  *
  * returns DWT_SUCCESS for success (and the position in the buffer at which data begins), or DWT_ERROR for error
  */
-extern int readfromspi(uint16_t headerLength, /*const*/ uint8_t *headerBuffer, uint16_t readlength, uint8_t *readBuffer);
+extern int readfromspi(uint16_t headerLength, /*const*/ uint8_t *headerBuffer, uint16_t readlength, volatile uint8_t *readBuffer);
 
 #ifdef STM32F429xx
 /*! ------------------------------------------------------------------------------------------------------------------
