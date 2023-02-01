@@ -27,10 +27,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <uwb_slave.h>
-#include "ssd1331.h"
-#include "fonts.h"
-#include "oled_utils.h"
-#include "audio_player.h"
 
 uint8_t countDigits(uint32_t value);
 void handleResult(double distance);
@@ -277,46 +273,46 @@ double calculateDistance(void)
 //    sounds a buzzer according to the distance
 // PARAMETERS    :
 //    double distance : Distance in meters
-void handleResult(double distance)
-{
-  /* Display computed distance on OLED. */
-  if (countDigits(prev_distance) > countDigits(distance))
-  {
-    // Clearing the extra digit at the front since otherwise the display will retain it.
-    // Ex: When transitioning from 10 to 9, it will display as 19 without clearing "1".
-    snprintf(dist_str, sizeof(dist_str), " %3.2f m", fabs(distance));
-  }
-  else
-  {
-    snprintf(dist_str, sizeof(dist_str), "%3.2f m", fabs(distance));
-  }
-  prev_distance = distance;
-
-  uint16_t fontColour = GREEN;
-
-  if (distance >= 0.0 && distance <= 0.5)
-  {
-    fontColour = GREEN;
-  }
-  else if (distance > 0.5  && distance <= 2.0)
-  {
-    fontColour = YELLOW;
-  }
-  else if (distance > 2.0  && distance <= 4.5)
-  {
-    fontColour = ORANGE;  // I had to add orange into ssd1331.h
-  }
-  else if (distance > 4.5)
-  {
-    fontColour = RED;
-  }
-
-  displayTextOnCorner(dist_str, FONT_LARGE, fontColour, TOP_RIGHT);
-
-  playAudio(distance);
-
-  detectionTimeout = 0;
-}
+//void handleResult(double distance)
+//{
+//  /* Display computed distance on OLED. */
+//  if (countDigits(prev_distance) > countDigits(distance))
+//  {
+//    // Clearing the extra digit at the front since otherwise the display will retain it.
+//    // Ex: When transitioning from 10 to 9, it will display as 19 without clearing "1".
+//    snprintf(dist_str, sizeof(dist_str), " %3.2f m", fabs(distance));
+//  }
+//  else
+//  {
+//    snprintf(dist_str, sizeof(dist_str), "%3.2f m", fabs(distance));
+//  }
+//  prev_distance = distance;
+//
+//  uint16_t fontColour = GREEN;
+//
+//  if (distance >= 0.0 && distance <= 0.5)
+//  {
+//    fontColour = GREEN;
+//  }
+//  else if (distance > 0.5  && distance <= 2.0)
+//  {
+//    fontColour = YELLOW;
+//  }
+//  else if (distance > 2.0  && distance <= 4.5)
+//  {
+//    fontColour = ORANGE;  // I had to add orange into ssd1331.h
+//  }
+//  else if (distance > 4.5)
+//  {
+//    fontColour = RED;
+//  }
+//
+//  displayTextOnCorner(dist_str, FONT_LARGE, fontColour, TOP_RIGHT);
+//
+//  playAudio(distance);
+//
+//  detectionTimeout = 0;
+//}
 
 // FUNCTION      : countDigits
 // DESCRIPTION   :

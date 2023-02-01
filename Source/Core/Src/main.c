@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "spi.h"
-#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -28,8 +27,6 @@
 #include <stdio.h>
 #include "uwb_master.h"
 #include "uwb_slave.h"
-#include "ssd1331.h"
-#include "buzzer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,13 +88,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
-  MX_TIM2_Init();
-  MX_SPI2_Init();
   MX_USART2_UART_Init();
-  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  ssd1331_init();
-  initBuzzer();
 
   // When flashing STM boards (master and slave), One of the following
   // function calls will be commented accordingly
