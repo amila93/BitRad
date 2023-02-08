@@ -1,21 +1,3 @@
-/*! ----------------------------------------------------------------------------
- *  @file    ss_twr_initiator.c
- *  @brief   Single-sided two-way ranging (SS TWR) initiator example code
- *
- *           This is a simple code example which acts as the initiator in a SS TWR distance measurement exchange. This application sends a "poll"
- *           frame (recording the TX time-stamp of the poll), after which it waits for a "response" message from the "DS TWR responder" example
- *           code (companion to this application) to complete the exchange. The response message contains the remote responder's time-stamps of poll
- *           RX, and response TX. With this data and the local time-stamps, (of poll TX and response RX), this example application works out a value
- *           for the time-of-flight over-the-air and, thus, the estimated distance between the two devices, which it writes to the LCD.
- *
- * @attention
- *
- * Copyright 2015-2020 (c) Decawave Ltd, Dublin, Ireland.
- *
- * All rights reserved.
- *
- * @author Decawave
- */
 #include <deca_device_api.h>
 #include <deca_regs.h>
 #include <deca_spi.h>
