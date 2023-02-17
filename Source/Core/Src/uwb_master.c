@@ -75,9 +75,6 @@ extern dwt_txconfig_t txconfig_options;
 void transmit(void);
 void memcpy_byte(volatile uint8_t* dest, const uint8_t* src, size_t length);
 
-static uint8_t relay_toggler = 1;
-static uint8_t done_toggling = 0;
-
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn main()
  *
@@ -131,29 +128,27 @@ int uwb_master(void)
   /* Loop forever responding to ranging requests. */
   while (1)
   {
-    if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1)) // TODO: Make this pretty
+    if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
+        !HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
     {
-      if (relay_toggler)
-      {
-        memcpy_byte(tx_resp_msg, rx_first_relay, ALL_MSG_COMMON_LEN);  // Turn on the first relay
-      }
-      else
-      {
-        memcpy_byte(tx_resp_msg, rx_second_relay, ALL_MSG_COMMON_LEN);  // Turn on the second relay
-      }
-
-      transmit();
-
-      done_toggling = 0;
+      memcpy_byte(tx_resp_msg, rx_first_relay, ALL_MSG_COMMON_LEN);  // Turn on the first relay
+    }
+    else if (!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
+        HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
+    {
+      memcpy_byte(tx_resp_msg, rx_second_relay, ALL_MSG_COMMON_LEN);  // Turn on the second relay
+    }
+    else if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
+        HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
+    {
+      memcpy_byte(tx_resp_msg, rx_all_relays, ALL_MSG_COMMON_LEN);  // Turn on all the relays
     }
     else
     {
-      if (!done_toggling)
-      {
-        relay_toggler = !relay_toggler;
-        done_toggling = 1;
-      }
+      memcpy_byte(tx_resp_msg, rx_no_relay, ALL_MSG_COMMON_LEN);  // Turn off all the relays
     }
+
+    transmit();
   }
 }
 
