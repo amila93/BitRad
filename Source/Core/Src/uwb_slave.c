@@ -10,9 +10,16 @@
 #include <math.h>
 #include <uwb_slave.h>
 
+enum RelayState
+{
+  RELAY_ON = 0,
+  RELAY_OFF
+};
+
 uint8_t countDigits(uint32_t value);
 void handleResult(double distance);
 double calculateDistance(void);
+void controlRelays(enum RelayState r1State, enum RelayState r2State);
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {
@@ -179,6 +186,7 @@ int uwb_slave(void)
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
         {
           printf("\rDistance: %f, prefix suffix OK, param: %c\n", calculateDistance(), rx_buffer[RX_PARAM_IDX]);
+          detectionTimeout = 0;
 
           switch (rx_buffer[RX_PARAM_IDX])
           {
@@ -206,20 +214,22 @@ int uwb_slave(void)
       dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
     }
 
-//    if (detectionTimeout >= 1)
-//    {
-//      pauseAudio();
-//
-//      // Clear display
-//      snprintf(dist_str, sizeof(dist_str), "        ");
-//      displayTextOnCorner(dist_str, FONT_LARGE, WHITE, TOP_RIGHT);
-//    }
-//
-//    detectionTimeout++;
+    if (detectionTimeout >= 1) /* Unable to detect the master */
+    {
+      printf("\rUnable to find the master module!\n");
+      controlRelays(RELAY_OFF, RELAY_OFF);
+    }
+
+    detectionTimeout++;
 
     /* Execute a delay between ranging exchanges. */
     Sleep(RNG_DELAY_MS);
   }
+}
+
+void controlRelays(enum RelayState r1State, enum RelayState r2State)
+{
+
 }
 
 double calculateDistance(void)
