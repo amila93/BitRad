@@ -16,8 +16,6 @@ enum RelayState
   RELAY_OFF
 };
 
-uint8_t countDigits(uint32_t value);
-void handleResult(double distance);
 double calculateDistance(void);
 void controlRelays(enum RelayState r1State, enum RelayState r2State);
 
@@ -80,8 +78,6 @@ static uint32_t status_reg = 0;
 /* Hold copies of computed time of flight and distance here for reference so that it can be examined at a debug breakpoint. */
 static double tof;
 static double distance;
-
-static double prev_distance = 0;
 
 static uint8_t detectionTimeout = 0;
 
@@ -257,73 +253,6 @@ double calculateDistance(void)
   distance = tof * SPEED_OF_LIGHT;
 
   return distance;
-}
-
-// FUNCTION      : handleResult
-// DESCRIPTION   :
-//    This function will displays the distance on the SSD1331 OLED display and
-//    sounds a buzzer according to the distance
-// PARAMETERS    :
-//    double distance : Distance in meters
-//void handleResult(double distance)
-//{
-//  /* Display computed distance on OLED. */
-//  if (countDigits(prev_distance) > countDigits(distance))
-//  {
-//    // Clearing the extra digit at the front since otherwise the display will retain it.
-//    // Ex: When transitioning from 10 to 9, it will display as 19 without clearing "1".
-//    snprintf(dist_str, sizeof(dist_str), " %3.2f m", fabs(distance));
-//  }
-//  else
-//  {
-//    snprintf(dist_str, sizeof(dist_str), "%3.2f m", fabs(distance));
-//  }
-//  prev_distance = distance;
-//
-//  uint16_t fontColour = GREEN;
-//
-//  if (distance >= 0.0 && distance <= 0.5)
-//  {
-//    fontColour = GREEN;
-//  }
-//  else if (distance > 0.5  && distance <= 2.0)
-//  {
-//    fontColour = YELLOW;
-//  }
-//  else if (distance > 2.0  && distance <= 4.5)
-//  {
-//    fontColour = ORANGE;  // I had to add orange into ssd1331.h
-//  }
-//  else if (distance > 4.5)
-//  {
-//    fontColour = RED;
-//  }
-//
-//  displayTextOnCorner(dist_str, FONT_LARGE, fontColour, TOP_RIGHT);
-//
-//  playAudio(distance);
-//
-//  detectionTimeout = 0;
-//}
-
-// FUNCTION      : countDigits
-// DESCRIPTION   :
-//    Counts the number of digits in an integer value (Ex: 120 has 3 digits).
-// PARAMETERS    :
-//    uint32_t value : Input value.
-// RETURNS       :
-//    uint8_t : Returns the number of digits of the input value.
-uint8_t countDigits(uint32_t value)
-{
-  uint8_t numberOfDigits = 0;
-
-  while (value != 0)
-  {
-    value /= 10;
-    numberOfDigits++;
-  }
-
-  return numberOfDigits;
 }
 
 /*****************************************************************************************************************************************************
