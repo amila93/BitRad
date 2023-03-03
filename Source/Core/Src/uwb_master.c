@@ -30,13 +30,13 @@ static dwt_config_t config = {
 
 #define TX_BUF_LEN 20
 
-static const uint8_t rx_no_relay[] =
+static const uint8_t tx_no_relay[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '0', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static const uint8_t rx_first_relay[] =
+static const uint8_t tx_first_relay[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '1', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static const uint8_t rx_second_relay[] =
+static const uint8_t tx_second_relay[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '2', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static const uint8_t rx_all_relays[] =
+static const uint8_t tx_all_relays[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '3', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 /* Frames used in the ranging process. See NOTE 3 below. */
@@ -131,21 +131,21 @@ int uwb_master(void)
     if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
         !HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
     {
-      memcpy_byte(tx_resp_msg, rx_first_relay, ALL_MSG_COMMON_LEN);  // Turn on the first relay
+      memcpy_byte(tx_resp_msg, tx_first_relay, ALL_MSG_COMMON_LEN);  // Turn on the first relay
     }
     else if (!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
         HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
     {
-      memcpy_byte(tx_resp_msg, rx_second_relay, ALL_MSG_COMMON_LEN);  // Turn on the second relay
+      memcpy_byte(tx_resp_msg, tx_second_relay, ALL_MSG_COMMON_LEN);  // Turn on the second relay
     }
     else if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
         HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
     {
-      memcpy_byte(tx_resp_msg, rx_all_relays, ALL_MSG_COMMON_LEN);  // Turn on all the relays
+      memcpy_byte(tx_resp_msg, tx_all_relays, ALL_MSG_COMMON_LEN);  // Turn on all the relays
     }
     else
     {
-      memcpy_byte(tx_resp_msg, rx_no_relay, ALL_MSG_COMMON_LEN);  // Turn off all the relays
+      memcpy_byte(tx_resp_msg, tx_no_relay, ALL_MSG_COMMON_LEN);  // Turn off all the relays
     }
 
     transmit();
