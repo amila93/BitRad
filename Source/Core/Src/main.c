@@ -93,8 +93,8 @@ int main(void)
 
   // When flashing STM boards (master and slave), One of the following
   // function calls will be commented accordingly
-  uwb_slave(); // Acts as the slave (066BFF535157808667101914)
-//  uwb_master(); // Acts as the master
+//  uwb_slave(); // Acts as the slave (066BFF535157808667101914)
+  uwb_master(); // Acts as the master
 
   /* USER CODE END 2 */
 

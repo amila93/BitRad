@@ -6,6 +6,7 @@
 #include <shared_functions.h>
 #include <stdio.h>
 #include <uwb_master.h>
+#include "main.h"
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {
@@ -129,18 +130,18 @@ int uwb_master(void)
   /* Loop forever responding to ranging requests. */
   while (1)
   {
-    if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
-        !HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
+    if (HAL_GPIO_ReadPin(CONTROLLER_IN_1_GPIO_Port, CONTROLLER_IN_1_Pin) &&
+        !HAL_GPIO_ReadPin(CONTROLLER_IN_2_GPIO_Port, CONTROLLER_IN_2_Pin))
     {
       set_tx_param(1);  // Turn on the first relay
     }
-    else if (!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
-        HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
+    else if (!HAL_GPIO_ReadPin(CONTROLLER_IN_1_GPIO_Port, CONTROLLER_IN_1_Pin) &&
+        HAL_GPIO_ReadPin(CONTROLLER_IN_2_GPIO_Port, CONTROLLER_IN_2_Pin))
     {
       set_tx_param(2);  // Turn on the second relay
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_0) &&
-        HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1))
+    else if (HAL_GPIO_ReadPin(CONTROLLER_IN_1_GPIO_Port, CONTROLLER_IN_1_Pin) &&
+        HAL_GPIO_ReadPin(CONTROLLER_IN_2_GPIO_Port, CONTROLLER_IN_2_Pin))
     {
       set_tx_param(3);  // Turn on all the relays
     }
