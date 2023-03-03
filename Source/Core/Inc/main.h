@@ -61,18 +61,23 @@ void Error_Handler(void);
 #define CONTROLLER_IN_1_GPIO_Port GPIOC
 #define CONTROLLER_IN_2_Pin GPIO_PIN_1
 #define CONTROLLER_IN_2_GPIO_Port GPIOC
+#define RELAY_2_OUT_Pin GPIO_PIN_4
+#define RELAY_2_OUT_GPIO_Port GPIOA
 #define DW_SCK_Pin GPIO_PIN_5
 #define DW_SCK_GPIO_Port GPIOA
 #define DW_MISO_Pin GPIO_PIN_6
 #define DW_MISO_GPIO_Port GPIOA
 #define DW_MOSI_Pin GPIO_PIN_7
 #define DW_MOSI_GPIO_Port GPIOA
+#define RELAY_1_OUT_Pin GPIO_PIN_0
+#define RELAY_1_OUT_GPIO_Port GPIOB
 #define DW_RESET_Pin GPIO_PIN_8
 #define DW_RESET_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define DW_NSS_Pin GPIO_PIN_6
 #define DW_NSS_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
