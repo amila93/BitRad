@@ -17,8 +17,8 @@ enum RelayState
   RELAY_OFF = GPIO_PIN_RESET
 };
 
-double calculateDistance(void);
-void controlRelays(enum RelayState r1State, enum RelayState r2State);
+double calculate_distance(void);
+void control_relays(enum RelayState r1State, enum RelayState r2State);
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {
@@ -182,26 +182,26 @@ int uwb_slave(void)
         if (memcmp(rx_buffer, rx_prefix, RX_PREFIX_LEN) == 0 &&
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
         {
-          printf("\rDistance: %f, prefix suffix OK, param: %c\n", calculateDistance(), rx_buffer[RX_PARAM_IDX]);
+          printf("\rDistance: %f, prefix suffix OK, param: %c\n", calculate_distance(), rx_buffer[RX_PARAM_IDX]);
           detectionTimeout = 0;
 
           switch (rx_buffer[RX_PARAM_IDX])
           {
             case '0':
               printf("\rNo relay\n");
-              controlRelays(RELAY_OFF, RELAY_OFF);
+              control_relays(RELAY_OFF, RELAY_OFF);
               break;
             case '1':
               printf("\r1st relay\n");
-              controlRelays(RELAY_ON, RELAY_OFF);
+              control_relays(RELAY_ON, RELAY_OFF);
               break;
             case '2':
               printf("\r2nd relay\n");
-              controlRelays(RELAY_OFF, RELAY_ON);
+              control_relays(RELAY_OFF, RELAY_ON);
               break;
             case '3':
               printf("\rAll relays\n");
-              controlRelays(RELAY_ON, RELAY_ON);
+              control_relays(RELAY_ON, RELAY_ON);
               break;
             default:
               printf("\rInvalid parameter!\n");
@@ -218,7 +218,7 @@ int uwb_slave(void)
     if (detectionTimeout >= 1) /* Unable to detect the master */
     {
       printf("\rUnable to find the master module!\n");
-      controlRelays(RELAY_OFF, RELAY_OFF);
+      control_relays(RELAY_OFF, RELAY_OFF);
     }
 
     detectionTimeout++;
@@ -228,7 +228,7 @@ int uwb_slave(void)
   }
 }
 
-void controlRelays(enum RelayState r1State, enum RelayState r2State)
+void control_relays(enum RelayState r1State, enum RelayState r2State)
 {
   if (HAL_GPIO_ReadPin(RELAY_1_OUT_GPIO_Port, RELAY_1_OUT_Pin) != (GPIO_PinState)r1State)
   {
@@ -241,7 +241,7 @@ void controlRelays(enum RelayState r1State, enum RelayState r2State)
   }
 }
 
-double calculateDistance(void)
+double calculate_distance(void)
 {
   uint32_t poll_tx_ts, resp_rx_ts, poll_rx_ts, resp_tx_ts;
   int32_t rtd_init, rtd_resp;
