@@ -9,11 +9,12 @@
 #include <stdio.h>
 #include <math.h>
 #include <uwb_slave.h>
+#include "main.h"
 
 enum RelayState
 {
-  RELAY_ON = 0,
-  RELAY_OFF
+  RELAY_ON = GPIO_PIN_SET,
+  RELAY_OFF = GPIO_PIN_RESET
 };
 
 double calculateDistance(void);
@@ -188,15 +189,19 @@ int uwb_slave(void)
           {
             case '0':
               printf("\rNo relay\n");
+              controlRelays(RELAY_OFF, RELAY_OFF);
               break;
             case '1':
               printf("\r1st relay\n");
+              controlRelays(RELAY_ON, RELAY_OFF);
               break;
             case '2':
               printf("\r2nd relay\n");
+              controlRelays(RELAY_OFF, RELAY_ON);
               break;
             case '3':
               printf("\rAll relays\n");
+              controlRelays(RELAY_ON, RELAY_ON);
               break;
             default:
               printf("\rInvalid parameter!\n");
@@ -225,7 +230,15 @@ int uwb_slave(void)
 
 void controlRelays(enum RelayState r1State, enum RelayState r2State)
 {
+  if (HAL_GPIO_ReadPin(RELAY_1_OUT_GPIO_Port, RELAY_1_OUT_Pin) != (GPIO_PinState)r1State)
+  {
+    HAL_GPIO_WritePin(RELAY_1_OUT_GPIO_Port, RELAY_1_OUT_Pin, r1State);
+  }
 
+  if (HAL_GPIO_ReadPin(RELAY_2_OUT_GPIO_Port, RELAY_2_OUT_Pin) != (GPIO_PinState)r2State)
+  {
+    HAL_GPIO_WritePin(RELAY_2_OUT_GPIO_Port, RELAY_2_OUT_Pin, r2State);
+  }
 }
 
 double calculateDistance(void)
