@@ -74,6 +74,8 @@ static uint32_t status_reg = 0;
 static uint64_t poll_rx_ts;
 static uint64_t resp_tx_ts;
 
+static uint32_t detection_timeout = 2000; /* Timeout in ms */
+
 /* Values for the PG_DELAY and TX_POWER registers reflect the bandwidth and power of the spectrum at the current
  * temperature. These values can be calibrated prior to taking reference measurements. See NOTE 5 below. */
 extern dwt_txconfig_t txconfig_options;
@@ -165,9 +167,18 @@ void transmit(void)
   /* Activate reception immediately. */
   dwt_rxenable(DWT_START_RX_IMMEDIATE);
 
+  uint32_t tick_start = HAL_GetTick();
   /* Poll for reception of a frame or error/timeout. See NOTE 6 below. */
   while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG_BIT_MASK | SYS_STATUS_ALL_RX_ERR)))
-  { };
+  {
+    /* Poll until detection_timeout and turn off feedback LEDs if slave is not found */
+    if ((HAL_GetTick() - tick_start) >= detection_timeout)
+    {
+      /* Unable to detect slave */
+      printf("\rUnable to find the slave module!\n");
+      handle_feedback(RELAY_OFF, RELAY_OFF);
+    }
+  };
 
   if (status_reg & SYS_STATUS_RXFCG_BIT_MASK)
   {

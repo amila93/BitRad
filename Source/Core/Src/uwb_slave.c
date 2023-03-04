@@ -183,7 +183,7 @@ int uwb_slave(void)
         if (memcmp(rx_buffer, rx_prefix, RX_PREFIX_LEN) == 0 &&
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
         {
-          printf("\rDistance: %f, prefix suffix OK, param: %c\n", calculate_distance(), rx_buffer[RX_PARAM_IDX]);
+          printf("\rDistance: %f, param: %c\n", calculate_distance(), rx_buffer[RX_PARAM_IDX]);
           detectionTimeout = 0;
 
           uint8_t rx_param = rx_buffer[RX_PARAM_IDX] - '0'; /* Converting char to int */
@@ -192,19 +192,19 @@ int uwb_slave(void)
           switch (rx_param)
           {
             case ALL_OFF:
-              printf("\rNo relay\n");
+              printf("\rAll relays are OFF\n");
               control_relays(RELAY_OFF, RELAY_OFF);
               break;
             case REL_1_ON:
-              printf("\r1st relay\n");
+              printf("\r1st relay is ON\n");
               control_relays(RELAY_ON, RELAY_OFF);
               break;
             case REL_2_ON:
-              printf("\r2nd relay\n");
+              printf("\r2nd relay is ON\n");
               control_relays(RELAY_OFF, RELAY_ON);
               break;
             case ALL_ON:
-              printf("\rAll relays\n");
+              printf("\rAll relays are ON\n");
               control_relays(RELAY_ON, RELAY_ON);
               break;
             default:
@@ -219,7 +219,7 @@ int uwb_slave(void)
       dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
     }
 
-    if (detectionTimeout >= 1) /* Unable to detect the master */
+    if (detectionTimeout >= 1) /* Unable to detect master */
     {
       printf("\rUnable to find the master module!\n");
       control_relays(RELAY_OFF, RELAY_OFF);
