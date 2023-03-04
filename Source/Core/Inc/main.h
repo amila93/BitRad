@@ -36,7 +36,19 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+typedef enum
+{
+  RELAY_ON = GPIO_PIN_SET,
+  RELAY_OFF = GPIO_PIN_RESET
+} RelayState;
 
+typedef enum
+{
+  ALL_OFF = 0,
+  REL_1_ON,
+  REL_2_ON,
+  ALL_ON
+} OutputStatus;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -73,6 +85,10 @@ void Error_Handler(void);
 #define RELAY_1_OUT_GPIO_Port GPIOB
 #define DW_RESET_Pin GPIO_PIN_8
 #define DW_RESET_GPIO_Port GPIOA
+#define FB_REL_1_Pin GPIO_PIN_11
+#define FB_REL_1_GPIO_Port GPIOA
+#define FB_REL_2_Pin GPIO_PIN_12
+#define FB_REL_2_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define DW_NSS_Pin GPIO_PIN_6

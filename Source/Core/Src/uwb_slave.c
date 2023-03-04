@@ -11,14 +11,8 @@
 #include <uwb_slave.h>
 #include "main.h"
 
-enum RelayState
-{
-  RELAY_ON = GPIO_PIN_SET,
-  RELAY_OFF = GPIO_PIN_RESET
-};
-
 double calculate_distance(void);
-void control_relays(enum RelayState r1State, enum RelayState r2State);
+void control_relays(RelayState r1State, RelayState r2State);
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {
@@ -49,6 +43,8 @@ static dwt_config_t config = {
 #define RX_SUFFIX_LEN 11
 static const uint8_t rx_prefix[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D'};
 static const uint8_t rx_suffix = 0xE1;
+
+#define TX_PARAM_IDX 8
 
 /* Frames used in the ranging process. See NOTE 3 below. */
 static uint8_t tx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'B', 'I', 'T', 'R', 0xE0, 0, 0};
@@ -81,6 +77,8 @@ static double tof;
 static double distance;
 
 static uint8_t detectionTimeout = 0;
+
+OutputStatus current_output_status = ALL_OFF;
 
 /* Values for the PG_DELAY and TX_POWER registers reflect the bandwidth and power of the spectrum at the current
  * temperature. These values can be calibrated prior to taking reference measurements. See NOTE 2 below. */
@@ -145,6 +143,9 @@ int uwb_slave(void)
   /* Loop forever initiating ranging exchanges. */
   while (1)
   {
+    /* Embed the feedback parameter to the tx buffer */
+    tx_poll_msg[TX_PARAM_IDX] = (uint8_t)current_output_status;
+
     /* Write frame data to DW IC and prepare transmission. See NOTE 7 below. */
     tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
     dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_TXFRS_BIT_MASK);
@@ -185,21 +186,24 @@ int uwb_slave(void)
           printf("\rDistance: %f, prefix suffix OK, param: %c\n", calculate_distance(), rx_buffer[RX_PARAM_IDX]);
           detectionTimeout = 0;
 
-          switch (rx_buffer[RX_PARAM_IDX])
+          uint8_t rx_param = rx_buffer[RX_PARAM_IDX] - '0'; /* Converting char to int */
+          current_output_status = (OutputStatus)rx_param;
+
+          switch (rx_param)
           {
-            case '0':
+            case ALL_OFF:
               printf("\rNo relay\n");
               control_relays(RELAY_OFF, RELAY_OFF);
               break;
-            case '1':
+            case REL_1_ON:
               printf("\r1st relay\n");
               control_relays(RELAY_ON, RELAY_OFF);
               break;
-            case '2':
+            case REL_2_ON:
               printf("\r2nd relay\n");
               control_relays(RELAY_OFF, RELAY_ON);
               break;
-            case '3':
+            case ALL_ON:
               printf("\rAll relays\n");
               control_relays(RELAY_ON, RELAY_ON);
               break;
@@ -228,7 +232,7 @@ int uwb_slave(void)
   }
 }
 
-void control_relays(enum RelayState r1State, enum RelayState r2State)
+void control_relays(RelayState r1State, RelayState r2State)
 {
   if (HAL_GPIO_ReadPin(RELAY_1_OUT_GPIO_Port, RELAY_1_OUT_Pin) != (GPIO_PinState)r1State)
   {

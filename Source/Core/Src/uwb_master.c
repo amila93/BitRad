@@ -29,8 +29,6 @@ static dwt_config_t config = {
 #define TX_ANT_DLY 16385
 #define RX_ANT_DLY 16385
 
-#define TX_BUF_LEN 20
-
 static const uint8_t tx_no_relay[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '0', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static const uint8_t tx_first_relay[] =
@@ -41,7 +39,11 @@ static const uint8_t tx_all_relays[] =
   {0x41, 0x88, 0, 0xCA, 0xDE, 'E', 'S', 'D', '3', 0xE1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 /* Frames used in the ranging process. See NOTE 3 below. */
-static uint8_t rx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'B', 'I', 'T', 'R', 0xE0, 0, 0};
+//static uint8_t rx_poll_msg[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'B', 'I', 'T', 'R', 0xE0, 0, 0};
+static const uint8_t rx_prefix[] = {0x41, 0x88, 0, 0xCA, 0xDE, 'B', 'I', 'T'};
+static const uint8_t rx_suffix = 0xE0;
+
+#define TX_BUF_LEN 20
 volatile static uint8_t tx_resp_msg[TX_BUF_LEN];
 
 /* Length of the common part of the message (up to and including the function code, see NOTE 3 below). */
@@ -58,6 +60,9 @@ static uint8_t frame_seq_nb = 0;
  * Its size is adjusted to longest frame that this example code is supposed to handle. */
 #define RX_BUF_LEN 12//Must be less than FRAME_LEN_MAX_EX
 static uint8_t rx_buffer[RX_BUF_LEN];
+
+#define RX_PREFIX_LEN 8
+#define RX_PARAM_IDX 8
 
 /* Hold copy of status register state here for reference so that it can be examined at a debug breakpoint. */
 static uint32_t status_reg = 0;
@@ -76,6 +81,7 @@ extern dwt_txconfig_t txconfig_options;
 void transmit(void);
 void memcpy_byte(volatile uint8_t* dest, const uint8_t* src, size_t length);
 void set_tx_param(uint8_t parameter);
+void handle_feedback(RelayState r1State, RelayState r2State);
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn main()
@@ -179,7 +185,9 @@ void transmit(void)
       /* Check that the frame is a poll sent by "SS TWR initiator" example.
        * As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
       rx_buffer[ALL_MSG_SN_IDX] = 0;
-      if (memcmp(rx_buffer, rx_poll_msg, ALL_MSG_COMMON_LEN) == 0)
+
+      if (memcmp(rx_buffer, rx_prefix, RX_PREFIX_LEN) == 0 &&
+          rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
       {
         uint32_t resp_tx_time;
         int ret;
@@ -217,6 +225,25 @@ void transmit(void)
           /* Increment frame sequence number after transmission of the poll message (modulo 256). */
           frame_seq_nb++;
         }
+
+        printf("\r[ACK] Prefix suffix OK, param: %d\n", rx_buffer[RX_PARAM_IDX]);
+        switch (rx_buffer[RX_PARAM_IDX])
+        {
+          case ALL_OFF: /* All relays are off */
+            handle_feedback(RELAY_OFF, RELAY_OFF);
+            break;
+          case REL_1_ON:  /* 1st relay is ON */
+            handle_feedback(RELAY_ON, RELAY_OFF);
+            break;
+          case REL_2_ON: /* 2nd relay is ON */
+            handle_feedback(RELAY_OFF, RELAY_ON);
+            break;
+          case ALL_ON:  /* All relays are on */
+            handle_feedback(RELAY_ON, RELAY_ON);
+            break;
+          default:
+            printf("\rInvalid parameter!\n");
+        }
       }
     }
   }
@@ -243,6 +270,19 @@ void set_tx_param(uint8_t parameter)
     case 3:
       memcpy_byte(tx_resp_msg, tx_all_relays, ALL_MSG_COMMON_LEN);  // Turn on all the relays
       break;
+  }
+}
+
+void handle_feedback(RelayState r1State, RelayState r2State)
+{
+  if (HAL_GPIO_ReadPin(FB_REL_1_GPIO_Port, FB_REL_1_Pin) != (GPIO_PinState)r1State)
+  {
+    HAL_GPIO_WritePin(FB_REL_1_GPIO_Port, FB_REL_1_Pin, r1State);
+  }
+
+  if (HAL_GPIO_ReadPin(FB_REL_2_GPIO_Port, FB_REL_2_Pin) != (GPIO_PinState)r2State)
+  {
+    HAL_GPIO_WritePin(FB_REL_2_GPIO_Port, FB_REL_2_Pin, r2State);
   }
 }
 
