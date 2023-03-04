@@ -13,6 +13,7 @@
 
 double calculate_distance(void);
 void control_relays(RelayState r1State, RelayState r2State);
+OutputStatus get_current_output_status();
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {
@@ -78,8 +79,6 @@ static double distance;
 
 static uint8_t detectionTimeout = 0;
 
-OutputStatus current_output_status = ALL_OFF;
-
 /* Values for the PG_DELAY and TX_POWER registers reflect the bandwidth and power of the spectrum at the current
  * temperature. These values can be calibrated prior to taking reference measurements. See NOTE 2 below. */
 extern dwt_txconfig_t txconfig_options;
@@ -144,7 +143,7 @@ int uwb_slave(void)
   while (1)
   {
     /* Embed the feedback parameter to the tx buffer */
-    tx_poll_msg[TX_PARAM_IDX] = (uint8_t)current_output_status;
+    tx_poll_msg[TX_PARAM_IDX] = (uint8_t)get_current_output_status();
 
     /* Write frame data to DW IC and prepare transmission. See NOTE 7 below. */
     tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
@@ -186,10 +185,7 @@ int uwb_slave(void)
           printf("\rDistance: %f, param: %c\n", calculate_distance(), rx_buffer[RX_PARAM_IDX]);
           detectionTimeout = 0;
 
-          uint8_t rx_param = rx_buffer[RX_PARAM_IDX] - '0'; /* Converting char to int */
-          current_output_status = (OutputStatus)rx_param;
-
-          switch (rx_param)
+          switch (rx_buffer[RX_PARAM_IDX] - '0') /* Converting char to int */
           {
             case ALL_OFF:
               printf("\rAll relays are OFF\n");
@@ -230,6 +226,27 @@ int uwb_slave(void)
     /* Execute a delay between ranging exchanges. */
     Sleep(RNG_DELAY_MS);
   }
+}
+
+OutputStatus get_current_output_status()
+{
+  GPIO_PinState rel1State = HAL_GPIO_ReadPin(RELAY_1_OUT_GPIO_Port, RELAY_1_OUT_Pin);
+  GPIO_PinState rel2State = HAL_GPIO_ReadPin(RELAY_2_OUT_GPIO_Port, RELAY_2_OUT_Pin);
+
+  if (rel1State && !rel2State)
+  {
+    return REL_1_ON;
+  }
+  else if (!rel1State && rel2State)
+  {
+    return REL_2_ON;
+  }
+  else if (rel1State && rel2State)
+  {
+    return ALL_ON;
+  }
+
+  return ALL_OFF;
 }
 
 void control_relays(RelayState r1State, RelayState r2State)
