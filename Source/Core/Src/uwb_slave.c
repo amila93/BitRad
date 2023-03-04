@@ -76,6 +76,9 @@ static uint32_t status_reg = 0;
 /* Hold copies of computed time of flight and distance here for reference so that it can be examined at a debug breakpoint. */
 static double tof;
 static double distance;
+/* Workable range in meters. If the master goes beyond this, the slave will turn off all outputs */
+#define ACCEPTABLE_RANGE_M 1.0
+#define RANGE_VALIDATION_TIMEOUT_MS 2000 /* Poll time in milliseconds to detect if the master is out of range */
 
 static uint8_t detectionTimeout = 0;
 
@@ -182,8 +185,32 @@ int uwb_slave(void)
         if (memcmp(rx_buffer, rx_prefix, RX_PREFIX_LEN) == 0 &&
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
         {
-          printf("\rDistance: %f, param: %c\n", calculate_distance(), rx_buffer[RX_PARAM_IDX]);
-          detectionTimeout = 0;
+          detectionTimeout = 0; /* Reset detection timeout */
+
+          double distance_to_master = calculate_distance();
+          printf("\rDistance: %f, param: %c\n", distance_to_master, rx_buffer[RX_PARAM_IDX]);
+
+          if (distance_to_master > ACCEPTABLE_RANGE_M)
+          {
+            uint32_t tick_start = HAL_GetTick();
+            uint8_t should_skip = 0;
+            while (calculate_distance() > ACCEPTABLE_RANGE_M) /* Poll until the master is out of range */
+            {
+              /* Poll until detection_timeout and turn off all relays if master is still out of range */
+              if ((HAL_GetTick() - tick_start) >= RANGE_VALIDATION_TIMEOUT_MS)
+              {
+                /* Master is out of range */
+                printf("\rMaster is out of range! Turning off all relays.\n");
+                control_relays(RELAY_OFF, RELAY_OFF);
+                should_skip = 1;
+                break; /* Exit the loop */
+              }
+
+              Sleep(RNG_DELAY_MS); /* Execute a delay between ranging exchanges. */
+            }
+
+            if (should_skip) continue; /* Continue to the next iteration */
+          }
 
           switch (rx_buffer[RX_PARAM_IDX] - '0') /* Converting char to int */
           {
