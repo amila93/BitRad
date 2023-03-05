@@ -80,7 +80,7 @@ static double distance;
 #define ACCEPTABLE_RANGE_M 1.0
 #define RANGE_VALIDATION_TIMEOUT_MS 2000 /* Poll time in milliseconds to detect if the master is out of range */
 
-static uint8_t detectionTimeout = 0;
+static uint8_t detection_timeout = 0;
 
 /* Values for the PG_DELAY and TX_POWER registers reflect the bandwidth and power of the spectrum at the current
  * temperature. These values can be calibrated prior to taking reference measurements. See NOTE 2 below. */
@@ -185,7 +185,7 @@ int uwb_slave(void)
         if (memcmp(rx_buffer, rx_prefix, RX_PREFIX_LEN) == 0 &&
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
         {
-          detectionTimeout = 0; /* Reset detection timeout */
+          detection_timeout = 0; /* Reset detection timeout */
 
           double distance_to_master = calculate_distance();
           printf("\rDistance: %f, param: %c\n", distance_to_master, rx_buffer[RX_PARAM_IDX]);
@@ -242,13 +242,13 @@ int uwb_slave(void)
       dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
     }
 
-    if (detectionTimeout >= 1) /* Unable to detect master */
+    if (detection_timeout >= 1) /* Unable to detect master */
     {
       printf("\rUnable to find the master module!\n");
       control_relays(RELAY_OFF, RELAY_OFF);
     }
 
-    detectionTimeout++;
+    detection_timeout++;
 
     /* Execute a delay between ranging exchanges. */
     Sleep(RNG_DELAY_MS);
