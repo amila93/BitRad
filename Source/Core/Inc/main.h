@@ -83,12 +83,10 @@ void Error_Handler(void);
 #define DW_MOSI_GPIO_Port GPIOA
 #define RELAY_1_OUT_Pin GPIO_PIN_0
 #define RELAY_1_OUT_GPIO_Port GPIOB
-#define LED_ERROR_Pin GPIO_PIN_12
-#define LED_ERROR_GPIO_Port GPIOB
+#define FB_REL_1_Pin GPIO_PIN_12
+#define FB_REL_1_GPIO_Port GPIOB
 #define DW_RESET_Pin GPIO_PIN_8
 #define DW_RESET_GPIO_Port GPIOA
-#define FB_REL_1_Pin GPIO_PIN_11
-#define FB_REL_1_GPIO_Port GPIOA
 #define FB_REL_2_Pin GPIO_PIN_12
 #define FB_REL_2_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
