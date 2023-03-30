@@ -286,14 +286,14 @@ void set_tx_param(uint8_t parameter)
 
 void handle_feedback(RelayState r1State, RelayState r2State)
 {
-  if (HAL_GPIO_ReadPin(FB_REL_1_GPIO_Port, FB_REL_1_Pin) != (GPIO_PinState)r1State)
+  if (HAL_GPIO_ReadPin(RELAY_1_OUT_GPIO_Port, RELAY_1_OUT_Pin) != (GPIO_PinState)r1State)
   {
-    HAL_GPIO_WritePin(FB_REL_1_GPIO_Port, FB_REL_1_Pin, r1State);
+    HAL_GPIO_WritePin(RELAY_1_OUT_GPIO_Port, RELAY_1_OUT_Pin, r1State);
   }
 
-  if (HAL_GPIO_ReadPin(FB_REL_2_GPIO_Port, FB_REL_2_Pin) != (GPIO_PinState)r2State)
+  if (HAL_GPIO_ReadPin(RELAY_2_OUT_GPIO_Port, RELAY_2_OUT_Pin) != (GPIO_PinState)r2State)
   {
-    HAL_GPIO_WritePin(FB_REL_2_GPIO_Port, FB_REL_2_Pin, r2State);
+    HAL_GPIO_WritePin(RELAY_2_OUT_GPIO_Port, RELAY_2_OUT_Pin, r2State);
   }
 }
 
