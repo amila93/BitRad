@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <uwb_master.h>
 #include "main.h"
+#include "error_led.h"
 
 /* Default communication configuration. We use default non-STS DW mode. */
 static dwt_config_t config = {
@@ -177,8 +178,10 @@ void transmit(void)
       /* Unable to detect slave */
       printf("\rUnable to find the slave module!\n");
       handle_feedback(RELAY_OFF, RELAY_OFF);
+      errorLedOn();
     }
   };
+  errorLedOff();
 
   if (status_reg & SYS_STATUS_RXFCG_BIT_MASK)
   {
