@@ -186,6 +186,7 @@ int uwb_slave(void)
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
         {
           detection_counter = 0; /* Reset the detection counter */
+          HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_RESET); /* Turn off error LED */
 
           double distance_to_master = calculate_distance();
           printf("\rDistance: %f, param: %c\n", distance_to_master, rx_buffer[RX_PARAM_IDX]);
@@ -246,6 +247,7 @@ int uwb_slave(void)
     {
       printf("\rUnable to find the master module!\n");
       control_relays(RELAY_OFF, RELAY_OFF); /* Turn off all relays */
+      HAL_GPIO_WritePin(LED_ERROR_GPIO_Port, LED_ERROR_Pin, GPIO_PIN_SET);
     }
 
     detection_counter++;
