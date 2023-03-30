@@ -13,6 +13,7 @@
 void initErrorLed(void);
 void errorLedOn(void);
 void errorLedOff(void);
-void updateErrorLedFrequency(uint16_t freqHz);
+void errorLedBlink(void);
+void deinitErrorLed(void);
 
 #endif /* INC_ERROR_LED_H_ */

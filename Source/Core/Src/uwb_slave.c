@@ -187,13 +187,14 @@ int uwb_slave(void)
             rx_buffer[ALL_MSG_COMMON_LEN - 1] == rx_suffix)
         {
           detection_counter = 0; /* Reset the detection counter */
-          errorLedOff();
 
           double distance_to_master = calculate_distance();
           printf("\rDistance: %f, param: %c\n", distance_to_master, rx_buffer[RX_PARAM_IDX]);
 
           if (distance_to_master > ACCEPTABLE_RANGE_M)
           {
+            errorLedBlink();
+
             uint32_t tick_start = HAL_GetTick();
             uint8_t should_skip = 0;
             while (calculate_distance() > ACCEPTABLE_RANGE_M) /* Poll until the master is out of range */
@@ -204,6 +205,7 @@ int uwb_slave(void)
                 /* Master is out of range */
                 printf("\rMaster is out of range! Turning off all relays.\n");
                 control_relays(RELAY_OFF, RELAY_OFF);
+
                 should_skip = 1;
                 break; /* Exit the loop */
               }
@@ -213,6 +215,8 @@ int uwb_slave(void)
 
             if (should_skip) continue; /* Continue to the next iteration */
           }
+
+          errorLedOff();
 
           switch (rx_buffer[RX_PARAM_IDX] - '0') /* Converting char to int */
           {
