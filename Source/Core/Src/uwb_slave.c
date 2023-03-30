@@ -74,9 +74,7 @@ static uint32_t status_reg = 0;
 /* Receive response timeout. See NOTE 5 below. */
 #define RESP_RX_TIMEOUT_UUS 210
 
-/* Hold copies of computed time of flight and distance here for reference so that it can be examined at a debug breakpoint. */
-static double tof;
-static double distance;
+static double distance_to_master;
 /* Workable range in meters. If the master goes beyond this, the slave will turn off all outputs */
 #define ACCEPTABLE_RANGE_M 1.0
 #define RANGE_VALIDATION_TIMEOUT_MS 2000 /* Poll time in milliseconds to detect if the master is out of range */
@@ -147,7 +145,14 @@ int uwb_slave(void)
   while (1)
   {
     /* Embed the feedback parameter to the tx buffer */
-    tx_poll_msg[TX_PARAM_IDX] = (uint8_t)get_current_output_status();
+    if (distance_to_master > ACCEPTABLE_RANGE_M)
+    {
+      tx_poll_msg[TX_PARAM_IDX] = OUT_OF_RANGE_CODE;
+    }
+    else
+    {
+      tx_poll_msg[TX_PARAM_IDX] = (uint8_t)get_current_output_status();
+    }
 
     /* Write frame data to DW IC and prepare transmission. See NOTE 7 below. */
     tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
@@ -188,7 +193,7 @@ int uwb_slave(void)
         {
           detection_counter = 0; /* Reset the detection counter */
 
-          double distance_to_master = calculate_distance();
+          distance_to_master = calculate_distance();
           printf("\rDistance: %f, param: %c\n", distance_to_master, rx_buffer[RX_PARAM_IDX]);
 
           if (distance_to_master > ACCEPTABLE_RANGE_M)
@@ -300,7 +305,8 @@ double calculate_distance(void)
 {
   uint32_t poll_tx_ts, resp_rx_ts, poll_rx_ts, resp_tx_ts;
   int32_t rtd_init, rtd_resp;
-  float clockOffsetRatio ;
+  float clockOffsetRatio;
+  double distance;
 
   /* Retrieve poll transmission and response reception timestamps. See NOTE 9 below. */
   poll_tx_ts = dwt_readtxtimestamplo32();
@@ -317,7 +323,7 @@ double calculate_distance(void)
   rtd_init = resp_rx_ts - poll_tx_ts;
   rtd_resp = resp_tx_ts - poll_rx_ts;
 
-  tof = ((rtd_init - rtd_resp * (1 - clockOffsetRatio)) / 2.0) * DWT_TIME_UNITS;
+  double tof = ((rtd_init - rtd_resp * (1 - clockOffsetRatio)) / 2.0) * DWT_TIME_UNITS;
   distance = tof * SPEED_OF_LIGHT;
 
   return distance;

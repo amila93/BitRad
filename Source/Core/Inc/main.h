@@ -91,7 +91,7 @@ void Error_Handler(void);
 #define DW_NSS_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+#define OUT_OF_RANGE_CODE 20
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

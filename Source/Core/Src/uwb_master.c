@@ -181,7 +181,6 @@ void transmit(void)
       errorLedOn();
     }
   };
-  errorLedOff();
 
   if (status_reg & SYS_STATUS_RXFCG_BIT_MASK)
   {
@@ -255,6 +254,9 @@ void transmit(void)
           case ALL_ON:  /* All relays are on */
             handle_feedback(RELAY_ON, RELAY_ON);
             break;
+          case OUT_OF_RANGE_CODE:
+            errorLedBlink();
+            break;
           default:
             printf("\rInvalid parameter!\n");
         }
@@ -298,6 +300,8 @@ void handle_feedback(RelayState r1State, RelayState r2State)
   {
     HAL_GPIO_WritePin(RELAY_2_OUT_GPIO_Port, RELAY_2_OUT_Pin, r2State);
   }
+
+  errorLedOff();
 }
 
 void memcpy_byte(volatile uint8_t* dest, const uint8_t* src, size_t length)
