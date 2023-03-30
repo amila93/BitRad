@@ -244,15 +244,19 @@ void transmit(void)
         {
           case ALL_OFF: /* All relays are off */
             handle_feedback(RELAY_OFF, RELAY_OFF);
+            errorLedOff();
             break;
           case REL_1_ON:  /* 1st relay is ON */
             handle_feedback(RELAY_ON, RELAY_OFF);
+            errorLedOff();
             break;
           case REL_2_ON: /* 2nd relay is ON */
             handle_feedback(RELAY_OFF, RELAY_ON);
+            errorLedOff();
             break;
           case ALL_ON:  /* All relays are on */
             handle_feedback(RELAY_ON, RELAY_ON);
+            errorLedOff();
             break;
           case OUT_OF_RANGE_CODE:
             errorLedBlink();
@@ -300,8 +304,6 @@ void handle_feedback(RelayState r1State, RelayState r2State)
   {
     HAL_GPIO_WritePin(RELAY_2_OUT_GPIO_Port, RELAY_2_OUT_Pin, r2State);
   }
-
-  errorLedOff();
 }
 
 void memcpy_byte(volatile uint8_t* dest, const uint8_t* src, size_t length)
