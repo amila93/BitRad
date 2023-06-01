@@ -3,7 +3,7 @@
 ## Demo
 ![Demo](demo.gif)
 
-## Introduction:
+## Introduction
 The Turnonalong is a device that will wirelessly control power to a remote device within a configurable safe distance. The distance has a centimeter-level accuracy thanks to the UWB (Ultra-Wideband) technology.  
 
 ## Proposed Solution
